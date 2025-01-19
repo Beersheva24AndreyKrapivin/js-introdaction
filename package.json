@@ -1,9 +1,8 @@
 {
   "name": "js-introdaction",
   "version": "1.0.0",
-  "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "vitest"
   },
   "keywords": [],
   "author": "",
@@ -11,5 +10,8 @@
   "description": "",
   "devDependencies": {
     "vitest": "^2.1.8"
+  },
+  "dependencies": {
+    "js-introdaction": "file:"
   }
 }
