@@ -1,40 +1,67 @@
-
-export function myParseInt(strNum) {
+const zeroCode = "0".charCodeAt(0);
+const aCode = "a".charCodeAt(0);
+const nineCode = "9".charCodeAt(0);
+export function myParseIntRadix(strNum, radix) {
+    //TODO
+    //converting from sting to number taking in consideration
+    //different number systems
+    //radix is number of digits in the number system
+    //radix is any number from 2 to 36 (0123456789... <all letters>)
+    //if radix is undefined the digital number system is implied
+    //examples: myParseIntRadix("10", 10) -> 10
+    //myParseIntRadix("f", 36) -> 15
+    //myParseIntRadix("z", 36) -> 35
+    //myParseIntRadix("3", 2) -> NaN
+    //myParseIntRadix("10103", 2) -> 10
     let res = NaN;
     let sign = 1;
-    if (strNum != null && strNum != undefined) {
+    let actualRadix = getActualRadix(radix);
+    if (strNum != null && strNum != undefined && !isNaN(actualRadix)) {
         let index = 0;
-
-        strNum = strNum.toString();
-        strNum = strNum.trim();
-        if (strNum[0] == '-') {
-            index++;
-            sign = -1;
-        } else if (strNum[0] == '+') {
-            index++;
-        }
-        if (index < strNum.length && !isNaN(getDigit(strNum[index]))) {
-            res = 0;
-            let running = true;
-            while (index < strNum.length && running) {
-                let digit = getDigit(strNum[index]);
-                if (isNaN(digit)) {
-                    running = false;
-                } else {
-                    res = res * 10 + digit;
-                    index++;
-                }
-
-            }
-
-        }
+        strNum = strNum.toString().trim().toLowerCase();
+        ({ index, sign } = signProcessing(strNum, index, sign));
+        res = convertProcessing(index, strNum, res, radix);
 
     }
+
     return res * sign;
 }
-function getDigit(digitStr) {
-    let res = digitStr >= '0' && digitStr <= '9' ? +digitStr : NaN;
+
+export function myParseInt(strNum) {
+    return myParseIntRadix(strNum, 10);
+}
+function convertProcessing(index, strNum, res, radix) {
+    if (index < strNum.length && !isNaN(getDigit(strNum[index], radix))) {
+        res = 0;
+        let running = true;
+        while (index < strNum.length && running) {
+            let digit = getDigit(strNum[index], radix);
+            if (isNaN(digit)) {
+                running = false;
+            } else {
+                res = res * radix + digit;
+                index++;
+            }
+        }
+    }
     return res;
+}
+
+function signProcessing(strNum, index, sign) {
+    if (strNum[0] == '-') {
+        index++;
+        sign = -1;
+    } else if (strNum[0] == '+') {
+        index++;
+    }
+    return { index, sign };
+}
+
+function getDigit(digitStr, radix) {
+    const code = digitStr.charCodeAt(0);
+    const base = code > nineCode ? aCode - 10 : zeroCode;
+    const res = code - base;
+    return res > -1 && res < radix ? res : NaN;
 }
 
 export function myToStringFromIntNumber(number) {
@@ -70,4 +97,12 @@ export function myToStringFromIntNumber(number) {
         }
     }
     return sign + res;
+}
+
+function getActualRadix(radix) {
+    let actualRadix = 10;
+    if (radix !== undefined) {
+        actualRadix = radix > 1 && radix < 37 ? radix : NaN;
+    }
+    return actualRadix
 }
