@@ -1,6 +1,9 @@
 const zeroCode = "0".charCodeAt(0);
 const aCode = "a".charCodeAt(0);
 const nineCode = "9".charCodeAt(0);
+const MIN_CODE = 32;
+const MAX_CODE = 126;
+const N_CODES = MAX_CODE - MIN_CODE + 1;
 export function myParseIntRadix(strNum, radix) {
     //TODO
     //converting from sting to number taking in consideration
@@ -105,4 +108,90 @@ function getActualRadix(radix) {
         actualRadix = radix > 1 && radix < 37 ? radix : NaN;
     }
     return actualRadix
+}
+
+//Printed ASCII table codes are from 32 (Space) to 126 (~)
+export function stringShift(str, shift) {
+    //TODO character code inside string is increased on the shift
+    //value 'd' shifted on 3 will result character 'd'
+    //'9' shift on 2 will result ';'
+    //if shifting causes exiting out of printable ASCII character
+    //there will be cycling from the begining
+    //if the 'shift' is a negative number o not a number the given
+    //string should be returned with no updating
+    //stringShift("Hello", 3) -> "Khoor"
+    //stringShift("~Z4", 3) -> '"]7'
+    //return shiftAndUnshift(shift, str, true);
+    return shiftUnshift(str, shift, true);
+}
+
+function getActualShift(code, shift, isShift) {
+    const actualShift = isShift ? code - MIN_CODE : MAX_CODE - code;
+    return (actualShift + shift) % N_CODES;
+}
+
+function shiftUnshiftOneChar(code, shift, isShift) {
+    const actualShift = getActualShift(code, shift, isShift);
+    const codeResult = isShift ? MIN_CODE + actualShift : MAX_CODE - actualShift;
+    return String.fromCharCode(codeResult);
+}
+
+function shiftUnshift(str, shift, isShift) {
+    let res = str;
+    shift = parseInt(shift);
+    if (str != undefined && shift > 0) {
+        str = str.toString();
+        res = '';
+        for (let i = 0; i < str.length; i++) {
+            res += shiftUnshiftOneChar(str.charCodeAt(i), shift, isShift);
+        }
+    }
+    return res;
+}
+
+function isValidShift(shift) {
+    const shiftNum = parseInt(shift);
+    return shiftNum > 0;
+}
+
+function shiftAndUnshift(shift, str, isShift) {
+    let res = "";
+    if (shift !== undefined && !isNaN(shift) && shift >= 0) {
+        const effectiveShift = shift % 95;
+        for (let i = 0; i < str.length; i++) {
+            let code = str.charCodeAt(i);
+            if (code >= 32 && code <= 126) {
+                let newCode;
+                if (isShift) {
+                    newCode = code + effectiveShift;
+                    if (newCode > 126) {
+                        newCode = 32 + (newCode - 127);
+                    }
+                } else {
+                    newCode = code - effectiveShift;
+                    if (newCode < 32) {
+                        newCode = 126 - (31 - newCode);
+                    }
+                }
+                res += String.fromCharCode(newCode);
+            }
+        }
+    } else {
+        res = str;
+    }
+    return res;
+}
+
+export function stringUnshift(str, shift) {
+    //TODO character code inside string is increased on the unshift
+    //value 'd' unshifted on 3 will result character 'a'
+    //';' unshift on 2 will result '9'
+    //if shifting causes exiting out of printable ASCII character
+    //there will be cycling from the end
+    //if the 'unshift' is a negative number o not a number the given
+    //string should be returned with no updating
+    //stringUnshift("Khoor", 3) -> "Hello"
+    //stringUnshift(""]7", 3) -> "~Z4"
+    //return shiftAndUnshift(shift, str, false);
+    return shiftUnshift(str, shift, false);
 }

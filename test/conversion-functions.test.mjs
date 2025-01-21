@@ -1,5 +1,5 @@
 import { describe, it, expect, test } from 'vitest';
-import { myParseInt, myToStringFromIntNumber, myParseIntRadix } from '../conversion-functions.mjs';
+import { myParseInt, myToStringFromIntNumber, myParseIntRadix, stringShift, stringUnshift } from '../conversion-functions.mjs';
 test("standart parseInt method with some wrong value", () => {
     expect(parseInt(10, 1)).toBeNaN();
 })
@@ -8,6 +8,22 @@ test("standart parseInt method with out radix", () => {
 })
 test("standart parseInt method with radix equaled null", () => {
     expect(parseInt(10, null)).toBeNaN;
+})
+describe("Shift and unshift", () => {
+    it("Shift", () => {
+        expect(stringShift("Hello", 3)).toBe("Khoor");
+        expect(stringShift("~Z4", 3)).toBe('"]7');
+        expect(stringShift("~Z4", NaN)).toBe("~Z4");
+    })
+    it("Unshift", () => {
+        expect(stringUnshift("Khoor", 3)).toBe("Hello");
+        expect(stringUnshift('"]7', 3)).toBe("~Z4");
+    })
+    it("Big shift", () => {
+        const shiftString = stringShift("abc", 100_000_000);
+        const unshiftString = stringUnshift(shiftString, 100_000_000);
+        expect(unshiftString).toEqual("abc");
+    })
 })
 describe("myParseIntRadix test suit", () => {
     it("myParseIntRadix test suit", () => {
